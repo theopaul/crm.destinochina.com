@@ -43,7 +43,7 @@ export async function processWebhookPayload(payload: any): Promise<void> {
 
         // Look up the organization by whatsapp_phone_number_id
         const { data: org, error: orgError } = await supabase
-          .from('organizations')
+          .from('crm_organizations')
           .select('*')
           .eq('whatsapp_phone_number_id', phoneNumberId)
           .single()
@@ -107,7 +107,7 @@ async function processIncomingMessage(
     // 1. Upsert contact
     const contact = await upsertContact(
       supabase,
-      org.id,
+      org.org_id,
       senderPhone,
       senderName
     )
@@ -115,7 +115,7 @@ async function processIncomingMessage(
     // 2. Find or create conversation
     const conversation = await findOrCreateConversation(
       supabase,
-      org.id,
+      org.org_id,
       contact.id
     )
 
@@ -195,7 +195,7 @@ async function processIncomingMessage(
       conversation.status === 'pending' &&
       !conversation.assigned_agent_id
     ) {
-      await assignAgent(supabase, org.id, conversation.id, conversation.queue)
+      await assignAgent(supabase, org.org_id, conversation.id, conversation.queue)
     }
 
     // 9. Send auto-reply if conversation is new and org has auto_reply_message
@@ -416,7 +416,7 @@ async function findOrCreateConversation(
   }
 
   // Log the protocol creation
-  await supabase.from('crm_protocol_logs').insert({
+  await supabase.from('crm_protocol_log').insert({
     org_id: orgId,
     conversation_id: created.id,
     protocol_number: protocolNumber,
@@ -531,7 +531,7 @@ async function assignAgent(
       .single()
 
     if (conv?.protocol_number) {
-      await supabase.from('crm_protocol_logs').insert({
+      await supabase.from('crm_protocol_log').insert({
         org_id: orgId,
         conversation_id: conversationId,
         protocol_number: conv.protocol_number,
@@ -546,7 +546,7 @@ async function assignAgent(
     }
 
     // Log agent activity
-    await supabase.from('crm_agent_activity_logs').insert({
+    await supabase.from('crm_agent_activity_log').insert({
       org_id: orgId,
       user_id: selectedAgent.id,
       activity_type: 'conversation_assigned',

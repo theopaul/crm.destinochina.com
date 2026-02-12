@@ -38,7 +38,7 @@ export function useCurrentUser() {
         const { data: org } = await supabase
           .from('crm_organizations')
           .select('*')
-          .eq('id', crmUser.org_id)
+          .eq('org_id', crmUser.org_id)
           .single<Organization>()
 
         if (org) {

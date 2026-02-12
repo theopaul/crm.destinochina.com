@@ -105,9 +105,9 @@ export async function POST(request: NextRequest) {
 
     // 5. Get the organization's WhatsApp credentials
     const { data: org, error: orgError } = await adminSupabase
-      .from('organizations')
+      .from('crm_organizations')
       .select('*')
-      .eq('id', crmUser.org_id)
+      .eq('org_id', crmUser.org_id)
       .single()
 
     if (orgError || !org) {
@@ -323,7 +323,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 10. Log agent activity
-    await adminSupabase.from('crm_agent_activity_logs').insert({
+    await adminSupabase.from('crm_agent_activity_log').insert({
       org_id: crmUser.org_id,
       user_id: user.id,
       activity_type: 'message_sent',
