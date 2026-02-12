@@ -283,7 +283,7 @@ export async function PATCH(request: NextRequest) {
       if (assigned_agent_id) {
         await adminSupabase.from('crm_agent_activity_log').insert({
           org_id: crmUser.org_id,
-          user_id: assigned_agent_id,
+          agent_id: assigned_agent_id,
           activity_type: 'conversation_assigned',
           details: {
             conversation_id: id,
@@ -296,7 +296,7 @@ export async function PATCH(request: NextRequest) {
       // Log resolution activity for the current agent
       await adminSupabase.from('crm_agent_activity_log').insert({
         org_id: crmUser.org_id,
-        user_id: user.id,
+        agent_id: user.id,
         activity_type: 'conversation_resolved',
         details: { conversation_id: id },
       })
@@ -308,7 +308,7 @@ export async function PATCH(request: NextRequest) {
         conversation_id: id,
         protocol_number: existingConv.protocol_number,
         action: 'conversation_updated',
-        performed_by: user.id,
+        agent_id: user.id,
         details: { changes },
       })
     }

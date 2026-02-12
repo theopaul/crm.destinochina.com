@@ -238,7 +238,7 @@ export async function POST(request: NextRequest) {
         phone: normalizedPhone,
         name: name || null,
         email: email || null,
-        profile_picture_url: null,
+        avatar_url: null,
         custom_fields: custom_fields || {},
         hubspot_contact_id: null,
         existing_client_id: null,

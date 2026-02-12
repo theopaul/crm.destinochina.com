@@ -325,8 +325,8 @@ export async function POST(request: NextRequest) {
     // 10. Log agent activity
     await adminSupabase.from('crm_agent_activity_log').insert({
       org_id: crmUser.org_id,
-      user_id: user.id,
-      activity_type: 'message_sent',
+      agent_id: user.id,
+      activity_type: 'conversation_assigned',
       details: {
         conversation_id: conversationId,
         message_id: savedMessage.id,

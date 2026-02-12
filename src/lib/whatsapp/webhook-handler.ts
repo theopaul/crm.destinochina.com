@@ -320,8 +320,8 @@ async function upsertContact(
     if (name && !existing.name) {
       updates.name = name
     }
-    if (profilePicture && profilePicture !== existing.profile_picture_url) {
-      updates.profile_picture_url = profilePicture
+    if (profilePicture && profilePicture !== existing.avatar_url) {
+      updates.avatar_url = profilePicture
     }
 
     // Only update if there are meaningful changes
@@ -350,7 +350,7 @@ async function upsertContact(
       org_id: orgId,
       phone,
       name: name || null,
-      profile_picture_url: profilePicture || null,
+      avatar_url: profilePicture || null,
       custom_fields: {},
       tags: [],
     })
@@ -421,7 +421,7 @@ async function findOrCreateConversation(
     conversation_id: created.id,
     protocol_number: protocolNumber,
     action: 'conversation_created',
-    performed_by: null,
+    agent_id: null,
     details: { source: 'whatsapp_incoming' },
   })
 
@@ -536,7 +536,7 @@ async function assignAgent(
         conversation_id: conversationId,
         protocol_number: conv.protocol_number,
         action: 'agent_assigned',
-        performed_by: null,
+        agent_id: null,
         details: {
           agent_id: selectedAgent.id,
           agent_name: selectedAgent.display_name,
@@ -548,7 +548,7 @@ async function assignAgent(
     // Log agent activity
     await supabase.from('crm_agent_activity_log').insert({
       org_id: orgId,
-      user_id: selectedAgent.id,
+      agent_id: selectedAgent.id,
       activity_type: 'conversation_assigned',
       details: { conversation_id: conversationId },
     })

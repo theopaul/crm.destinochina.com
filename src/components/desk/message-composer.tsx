@@ -76,9 +76,9 @@ export function MessageComposer({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          conversation_id: conversationId,
+          conversationId,
+          type: isNoteMode ? 'internal_note' : 'text',
           content: trimmed,
-          message_type: isNoteMode ? 'internal_note' : 'text',
         }),
       })
 

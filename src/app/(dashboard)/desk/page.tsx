@@ -40,7 +40,7 @@ export default function DeskPage() {
   const organization = useAuthStore((s) => s.organization)
 
   // Real-time subscriptions
-  useRealtimeConversations(organization?.id ?? null)
+  useRealtimeConversations(organization?.org_id ?? null)
   useRealtimeMessages(selectedConversationId)
 
   return (

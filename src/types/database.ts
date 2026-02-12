@@ -65,7 +65,8 @@ export const MESSAGE_STATUSES = {
 export const CAMPAIGN_STATUSES = {
   DRAFT: 'draft',
   SCHEDULED: 'scheduled',
-  SENDING: 'sending',
+  RUNNING: 'running',
+  PAUSED: 'paused',
   COMPLETED: 'completed',
   CANCELLED: 'cancelled',
   FAILED: 'failed',
@@ -76,14 +77,12 @@ export const CAMPAIGN_RECIPIENT_STATUSES = {
   SENT: 'sent',
   DELIVERED: 'delivered',
   READ: 'read',
-  REPLIED: 'replied',
   FAILED: 'failed',
 } as const
 
 export const FLOW_STATUSES = {
   DRAFT: 'draft',
-  ACTIVE: 'active',
-  PAUSED: 'paused',
+  PUBLISHED: 'published',
   ARCHIVED: 'archived',
 } as const
 
@@ -121,7 +120,7 @@ export interface BusinessHours {
 }
 
 export interface Organization {
-  id: string
+  org_id: string
   name: string
   whatsapp_phone_number_id: string | null
   whatsapp_business_account_id: string | null
@@ -165,7 +164,7 @@ export interface Contact {
   phone: string
   name: string | null
   email: string | null
-  profile_picture_url: string | null
+  avatar_url: string | null
   custom_fields: Record<string, unknown>
   hubspot_contact_id: string | null
   existing_client_id: string | null
@@ -246,7 +245,9 @@ export interface Message {
   error_message: string | null
   reply_to_message_id: string | null
   reply_to_message?: Message | null // joined (self-reference)
+  metadata: Record<string, unknown> | null
   created_at: string
+  updated_at: string
 }
 
 // -----------------------------------------------------------------------------
@@ -275,10 +276,9 @@ export interface Flow {
   name: string
   description: string | null
   status: FlowStatus
-  trigger_keywords: string[]
-  nodes: FlowNode[]
-  edges: FlowEdge[]
-  created_by: string | null
+  trigger_type: string
+  trigger_value: string | null
+  flow_data: { nodes: FlowNode[]; edges: FlowEdge[] } | null
   created_at: string
   updated_at: string
 }
@@ -334,30 +334,26 @@ export interface TeamChannel {
   org_id: string
   name: string
   description: string | null
-  is_private: boolean
+  type: 'public' | 'private' | 'dm'
   created_by: string | null
   created_at: string
-  updated_at: string
 }
 
 export interface TeamChannelMember {
-  id: string
   channel_id: string
   user_id: string
   user?: CrmUser // joined
-  role: 'admin' | 'member'
+  last_read_at: string | null
   joined_at: string
 }
 
 export interface TeamMessage {
   id: string
   channel_id: string
-  user_id: string
+  sender_id: string
   user?: CrmUser // joined
   content: string
-  message_type: 'text' | 'image' | 'document'
-  media_url: string | null
-  reply_to_message_id: string | null
+  reply_to_id: string | null
   created_at: string
   updated_at: string | null
 }
@@ -371,7 +367,6 @@ export interface Tag {
   org_id: string
   name: string
   color: string
-  description: string | null
   created_at: string
 }
 
@@ -413,13 +408,13 @@ export interface WhatsAppTemplateComponent {
 export interface WhatsAppTemplate {
   id: string
   org_id: string
-  template_id: string
+  whatsapp_template_id: string
   name: string
   language: string
   category: 'MARKETING' | 'UTILITY' | 'AUTHENTICATION'
   status: 'APPROVED' | 'PENDING' | 'REJECTED' | 'DISABLED'
   components: WhatsAppTemplateComponent[]
-  synced_at: string
+  updated_at: string
   created_at: string
 }
 
@@ -433,7 +428,7 @@ export interface ProtocolLog {
   conversation_id: string
   protocol_number: string
   action: string
-  performed_by: string | null
+  agent_id: string | null
   performer?: CrmUser // joined
   details: Record<string, unknown> | null
   created_at: string
@@ -446,11 +441,10 @@ export interface ProtocolLog {
 export interface AgentActivityLog {
   id: string
   org_id: string
-  user_id: string
+  agent_id: string
   user?: CrmUser // joined
   activity_type: AgentActivityType
   details: Record<string, unknown> | null
-  ip_address: string | null
   created_at: string
 }
 
@@ -595,8 +589,8 @@ export interface PaginatedResponse<T> {
 // Insert / Update types (omit server-generated fields)
 // =============================================================================
 
-export type OrganizationInsert = Omit<Organization, 'id' | 'created_at' | 'updated_at'>
-export type OrganizationUpdate = Partial<Omit<Organization, 'id' | 'created_at' | 'updated_at'>>
+export type OrganizationInsert = Omit<Organization, 'org_id' | 'created_at' | 'updated_at'>
+export type OrganizationUpdate = Partial<Omit<Organization, 'org_id' | 'created_at' | 'updated_at'>>
 
 export type CrmUserInsert = Omit<CrmUser, 'id' | 'created_at' | 'updated_at'>
 export type CrmUserUpdate = Partial<Omit<CrmUser, 'id' | 'org_id' | 'created_at' | 'updated_at'>>
@@ -607,8 +601,8 @@ export type ContactUpdate = Partial<Omit<Contact, 'id' | 'org_id' | 'created_at'
 export type ConversationInsert = Omit<Conversation, 'id' | 'created_at' | 'updated_at' | 'contact' | 'assigned_agent'>
 export type ConversationUpdate = Partial<Omit<Conversation, 'id' | 'org_id' | 'contact_id' | 'created_at' | 'updated_at' | 'contact' | 'assigned_agent'>>
 
-export type MessageInsert = Omit<Message, 'id' | 'created_at' | 'sender' | 'reply_to_message'>
-export type MessageUpdate = Partial<Pick<Message, 'status' | 'error_message' | 'media_url'>>
+export type MessageInsert = Omit<Message, 'id' | 'created_at' | 'updated_at' | 'sender' | 'reply_to_message'>
+export type MessageUpdate = Partial<Pick<Message, 'status' | 'error_message' | 'media_url' | 'metadata'>>
 
 export type FlowInsert = Omit<Flow, 'id' | 'created_at' | 'updated_at'>
 export type FlowUpdate = Partial<Omit<Flow, 'id' | 'org_id' | 'created_at' | 'updated_at'>>

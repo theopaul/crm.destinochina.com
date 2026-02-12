@@ -99,8 +99,8 @@ export function ConversationItem({ conversation }: ConversationItemProps) {
       {/* Avatar */}
       <div className="relative flex-shrink-0">
         <Avatar>
-          {contact?.profile_picture_url ? (
-            <AvatarImage src={contact.profile_picture_url} alt={displayName} />
+          {contact?.avatar_url ? (
+            <AvatarImage src={contact.avatar_url} alt={displayName} />
           ) : null}
           <AvatarFallback className={cn(avatarBg, 'text-white text-xs font-semibold')}>
             {initials}
