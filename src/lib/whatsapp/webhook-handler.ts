@@ -128,11 +128,11 @@ async function processIncomingMessage(
     let mediaMimeType: string | null = mimeType || null
     let mediaFilename: string | null = filename || null
 
-    if (mediaId && org.whatsapp_access_token) {
+    if (mediaId && (org.whatsapp_access_token || process.env.WHATSAPP_ACCESS_TOKEN)) {
       try {
         const result = await uploadMediaToSupabase(
           mediaId,
-          org.whatsapp_access_token,
+          (org.whatsapp_access_token || process.env.WHATSAPP_ACCESS_TOKEN),
           conversation.id
         )
         mediaUrl = result.publicUrl
@@ -202,14 +202,14 @@ async function processIncomingMessage(
     if (
       conversation.status === 'pending' &&
       org.auto_reply_message &&
-      org.whatsapp_access_token
+      (org.whatsapp_access_token || process.env.WHATSAPP_ACCESS_TOKEN)
     ) {
       try {
         await sendTextMessage({
           to: senderPhone,
           text: org.auto_reply_message,
           phoneNumberId,
-          accessToken: org.whatsapp_access_token,
+          accessToken: (org.whatsapp_access_token || process.env.WHATSAPP_ACCESS_TOKEN),
         })
       } catch (autoReplyError) {
         console.error('Error sending auto-reply:', autoReplyError)
@@ -217,9 +217,9 @@ async function processIncomingMessage(
     }
 
     // 10. Mark message as read on WhatsApp
-    if (org.whatsapp_access_token) {
+    if ((org.whatsapp_access_token || process.env.WHATSAPP_ACCESS_TOKEN)) {
       try {
-        await markAsRead(waMessageId, phoneNumberId, org.whatsapp_access_token)
+        await markAsRead(waMessageId, phoneNumberId, (org.whatsapp_access_token || process.env.WHATSAPP_ACCESS_TOKEN))
       } catch (readError) {
         console.error('Error marking message as read:', readError)
       }

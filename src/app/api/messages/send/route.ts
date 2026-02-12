@@ -117,7 +117,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!org.whatsapp_phone_number_id || !org.whatsapp_access_token) {
+    // Use env vars as fallback if org doesn't have tokens stored
+    const whatsappPhoneNumberId = whatsappPhoneNumberId || process.env.WHATSAPP_PHONE_NUMBER_ID
+    const whatsappAccessToken = whatsappAccessToken || process.env.WHATSAPP_ACCESS_TOKEN
+
+    if (!whatsappPhoneNumberId || !whatsappAccessToken) {
       return NextResponse.json(
         { error: 'WhatsApp credentials not configured for this organization' },
         { status: 400 }
@@ -154,8 +158,8 @@ export async function POST(request: NextRequest) {
           waResponse = await sendTextMessage({
             to: contact.phone,
             text: content,
-            phoneNumberId: org.whatsapp_phone_number_id,
-            accessToken: org.whatsapp_access_token,
+            phoneNumberId: whatsappPhoneNumberId,
+            accessToken: whatsappAccessToken,
             replyToMessageId: replyToWaId,
           })
           messagePreview =
@@ -179,8 +183,8 @@ export async function POST(request: NextRequest) {
             templateName,
             language: templateLanguage,
             components: templateComponents,
-            phoneNumberId: org.whatsapp_phone_number_id,
-            accessToken: org.whatsapp_access_token,
+            phoneNumberId: whatsappPhoneNumberId,
+            accessToken: whatsappAccessToken,
           })
           messagePreview = `[Template] ${templateName}`
           break
@@ -204,8 +208,8 @@ export async function POST(request: NextRequest) {
             caption: content || undefined,
             filename:
               type === 'document' ? body.filename || undefined : undefined,
-            phoneNumberId: org.whatsapp_phone_number_id,
-            accessToken: org.whatsapp_access_token,
+            phoneNumberId: whatsappPhoneNumberId,
+            accessToken: whatsappAccessToken,
           })
 
           savedMediaFilename = body.filename || null
