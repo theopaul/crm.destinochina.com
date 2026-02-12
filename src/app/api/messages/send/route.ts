@@ -118,8 +118,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Use env vars as fallback if org doesn't have tokens stored
-    const whatsappPhoneNumberId = whatsappPhoneNumberId || process.env.WHATSAPP_PHONE_NUMBER_ID
-    const whatsappAccessToken = whatsappAccessToken || process.env.WHATSAPP_ACCESS_TOKEN
+    const whatsappPhoneNumberId = org.whatsapp_phone_number_id || process.env.WHATSAPP_PHONE_NUMBER_ID
+    const whatsappAccessToken = org.whatsapp_access_token || process.env.WHATSAPP_ACCESS_TOKEN
 
     if (!whatsappPhoneNumberId || !whatsappAccessToken) {
       return NextResponse.json(
