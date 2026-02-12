@@ -95,13 +95,14 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // Return 200 immediately - Meta requires response within a few seconds.
-  // Process the payload asynchronously (fire-and-forget).
-  // In Vercel/Next.js edge or serverless, this will continue executing
-  // until the function completes, even after returning the response.
-  processWebhookPayload(payload).catch((error) => {
+  // Process the payload synchronously to ensure it completes before
+  // the serverless function is terminated.
+  try {
+    await processWebhookPayload(payload)
+    console.log('Webhook payload processed successfully')
+  } catch (error) {
     console.error('Error processing webhook payload:', error)
-  })
+  }
 
   return NextResponse.json({ status: 'ok' }, { status: 200 })
 }
