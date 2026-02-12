@@ -194,8 +194,8 @@ export function ContactPanel({ conversationId }: ContactPanelProps) {
         {/* ----------------------------------------------------------------- */}
         <div className="flex flex-col items-center pt-6 pb-4 px-4">
           <Avatar size="lg" className="size-16 mb-3">
-            {contact.avatar_url ? (
-              <AvatarImage src={contact.avatar_url} alt={displayName} />
+            {contact.profile_picture_url ? (
+              <AvatarImage src={contact.profile_picture_url} alt={displayName} />
             ) : null}
             <AvatarFallback className="text-lg font-semibold bg-emerald-600 text-white">
               {initials}

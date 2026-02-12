@@ -320,8 +320,8 @@ async function upsertContact(
     if (name && !existing.name) {
       updates.name = name
     }
-    if (profilePicture && profilePicture !== existing.avatar_url) {
-      updates.avatar_url = profilePicture
+    if (profilePicture && profilePicture !== existing.profile_picture_url) {
+      updates.profile_picture_url = profilePicture
     }
 
     // Only update if there are meaningful changes
@@ -350,7 +350,7 @@ async function upsertContact(
       org_id: orgId,
       phone,
       name: name || null,
-      avatar_url: profilePicture || null,
+      profile_picture_url: profilePicture || null,
       custom_fields: {},
       tags: [],
     })

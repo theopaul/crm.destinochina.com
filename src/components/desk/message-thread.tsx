@@ -217,8 +217,8 @@ export function MessageThread({ conversationId }: MessageThreadProps) {
         {/* Left: contact info */}
         <div className="flex items-center gap-3 min-w-0">
           <Avatar>
-            {contact?.avatar_url ? (
-              <AvatarImage src={contact.avatar_url} alt={contact.name || ''} />
+            {contact?.profile_picture_url ? (
+              <AvatarImage src={contact.profile_picture_url} alt={contact.name || ''} />
             ) : null}
             <AvatarFallback className="text-xs font-semibold">
               {contact?.name

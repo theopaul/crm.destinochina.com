@@ -164,7 +164,7 @@ export interface Contact {
   phone: string
   name: string | null
   email: string | null
-  avatar_url: string | null
+  profile_picture_url: string | null
   custom_fields: Record<string, unknown>
   hubspot_contact_id: string | null
   existing_client_id: string | null
